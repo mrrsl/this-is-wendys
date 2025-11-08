@@ -1,0 +1,20 @@
+{
+  "name": "this-is-wendys",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/mrrsl/this-is-wendys#readme",
+  "bugs": {
+    "url": "https://github.com/mrrsl/this-is-wendys/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrrsl/this-is-wendys.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
