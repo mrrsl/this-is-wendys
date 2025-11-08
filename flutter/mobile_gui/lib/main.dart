@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile_gui/websocket_controller.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
-void main() {
+WebsocketController ws = WebsocketController();
+
+void main() async {
+  await ws.pair();
   runApp(const MyApp());
 }
 
@@ -174,6 +179,29 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                     ),
                   ),
+                  ElevatedButton(
+                    onPressed: () {
+                      ws.sendData();
+                      // showDialog<String>(
+                      //   context: context,
+                      //   builder:
+                      //       (BuildContext context) => AlertDialog(
+                      //         title: const Text(
+                      //           'we haven\'t made the server yet lololololo',
+                      //         ),
+                      //         content: const Text('cope and seethe ig'),
+                      //         actions: <Widget>[
+                      //           TextButton(
+                      //             onPressed:
+                      //                 () => {Navigator.pop(context, 'OK')},
+                      //             child: const Text('OK'),
+                      //           ),
+                      //         ],
+                      //       ),
+                      // );
+                    },
+                    child: const Text('connect to server'),
+                  ), //connect button
                 ],
               ),
             ),
