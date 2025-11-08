@@ -14,5 +14,70 @@ body {
 }
 
 #header {
-  background-color: rgb(245, 173, 220);
+  background-color: rgb(214, 86, 101);
+  padding-top: 5px;
+  padding-bottom: 10px;
+}
+
+#container {
+  margin-top: 20vh;
+}
+
+button {
+  font-family: "SUSE Mono", sans-serif;
+  font-size: 1.1em;
+}
+
+.pairingCode {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: 7vh;
+}
+
+#pairing {
+  border: none;
+  border-bottom: 3px solid;
+  border-color: rgb(209, 109, 122);
+  background-color: rgb(243, 219, 227);
+  border-radius: 5px;
+  font-size: 1.4em;
+  padding-top: 8px;
+  width: 40vw;
+  height: auto;
+}
+
+#pairing::placeholder {
+  padding-top: 6px;
+  font-family: "SUSE Mono", sans-serif;
+}
+
+#textInput {
+  border: none;
+  border-bottom: 3px solid;
+  border-color: rgb(224, 82, 101);
+  background-color: rgb(243, 219, 227);
+  border-radius: 5px;
+  font-size: 1.4em;
+  padding-top: 8px;
+  width: 40vw;
+  height: auto;
+}
+
+#textInput::placeholder {
+  padding-top: 6px;
+  font-family: "SUSE Mono", sans-serif;
+}
+
+#buttons {
+  flex-direction: row;
+}
+
+#textInput:focus {
+  border-color: rgb(170, 144, 212);
+}
+
+#copy {
+  margin-right: 5vw;
 }
