@@ -6,7 +6,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 WebsocketController ws = WebsocketController();
 
 void main() async {
-  await ws.pair();
+  await ws.pair("dn");
   runApp(const MyApp());
 }
 
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'The File Drive-Thru'),
+      home: const MyHomePage(title: 'The Clipboard Drive-Thru'),
     );
   }
 }
@@ -103,53 +103,65 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
+                  //paste text into server button
                   ElevatedButton(
                     onPressed: () async {
                       ClipboardData? clipboardData = await Clipboard.getData(
                         Clipboard.kTextPlain,
                       );
-                      String text =
-                          clipboardData?.text ??
-                          'you have nothing in the clipboard';
-                      showDialog<String>(
-                        context: context,
-                        builder:
-                            (BuildContext context) => AlertDialog(
-                              title: const Text('success!'),
-                              content: Text(text),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, 'OK'),
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            ),
-                      );
-                    },
-                    child: const Text('copy from server'),
-                  ), //copy server text button
-
-                  ElevatedButton(
-                    onPressed: () {
-                      showDialog<String>(
-                        context: context,
-                        builder:
-                            (BuildContext context) => AlertDialog(
-                              title: const Text(
-                                'we haven\'t made the server yet lololololo',
+                      String? text = clipboardData?.text;
+                      if (text != null) {
+                        ws.sendData(text);
+                      } else {
+                        showDialog<String>(
+                          context: context,
+                          builder:
+                              (BuildContext context) => AlertDialog(
+                                title: const Text('Off to mcdonalds with you!'),
+                                content: Text("you didn't copy anything"),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.pop(context, 'OK'),
+                                    child: const Text('OK'),
+                                  ),
+                                ],
                               ),
-                              content: const Text('cope and seethe ig'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, 'OK'),
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            ),
-                      );
+                        );
+                      }
                     },
                     child: const Text('paste into server'),
-                  ), //paste into server button
+                  ),
+
+                  //copy server text button
+                  ElevatedButton(
+                    onPressed: () {
+                      if (ws.receivedMessage != defaultMessage) {
+                        Clipboard.setData(
+                          ClipboardData(text: ws.receivedMessage),
+                        );
+                      } else {
+                        showDialog<String>(
+                          context: context,
+                          builder:
+                              (BuildContext context) => AlertDialog(
+                                title: const Text('Nothing to copy'),
+                                content: Text(ws.receivedMessage),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.pop(context, 'OK'),
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              ),
+                        );
+                      }
+                    },
+                    child: const Text('copy from server'),
+                  ),
+
+                  //pairing key text field
                   Container(
                     margin: EdgeInsets.fromLTRB(
                       MediaQuery.of(context).size.width * 0.2,
@@ -159,14 +171,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     child: TextField(
                       onSubmitted: (text) {
+                        ws.pair(text);
                         showDialog<String>(
                           context: context,
                           builder:
                               (BuildContext context) => AlertDialog(
-                                title: const Text(
-                                  'we haven\'t made the server yet lololololo',
+                                title: const Text('Pairing key updated'),
+                                content: const Text(
+                                  'doesn\'t that just make you happy',
                                 ),
-                                content: const Text('cope and seethe ig'),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed:
@@ -179,26 +192,27 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                     ),
                   ),
+
+                  //connect to server button
                   ElevatedButton(
                     onPressed: () {
-                      ws.sendData();
-                      // showDialog<String>(
-                      //   context: context,
-                      //   builder:
-                      //       (BuildContext context) => AlertDialog(
-                      //         title: const Text(
-                      //           'we haven\'t made the server yet lololololo',
-                      //         ),
-                      //         content: const Text('cope and seethe ig'),
-                      //         actions: <Widget>[
-                      //           TextButton(
-                      //             onPressed:
-                      //                 () => {Navigator.pop(context, 'OK')},
-                      //             child: const Text('OK'),
-                      //           ),
-                      //         ],
-                      //       ),
-                      // );
+                      showDialog<String>(
+                        context: context,
+                        builder:
+                            (BuildContext context) => AlertDialog(
+                              title: const Text(
+                                'we haven\'t made the server yet lololololo',
+                              ),
+                              content: const Text('cope and seethe ig'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed:
+                                      () => {Navigator.pop(context, 'OK')},
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            ),
+                      );
                     },
                     child: const Text('connect to server'),
                   ), //connect button
@@ -214,5 +228,32 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<String?> pasteTextFromClipboard() async {
     ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
     return data?.text;
+  }
+
+  void HandleError(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('server fucked up'),
+          content: const Text('This is the content of your alert dialog.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog
+              },
+            ),
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                // Perform an action when OK is pressed
+                Navigator.of(context).pop(); // Dismiss the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
