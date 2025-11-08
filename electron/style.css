@@ -1,18 +1,18 @@
 @import url("https://fonts.googleapis.com/css2?family=SUSE+Mono:ital,wght@0,100..800;1,100..800&display=swap");
 
-.html,
-.body {
-  margin: 0;
-  padding: 0;
+html,
+body {
+  margin: 0px;
+  padding: 0px;
 }
 
 #title {
   display: flex;
   font-size: 3em;
   justify-content: center;
+  font-family: "SUSE Mono", sans-serif;
 }
 
 #header {
-  background-color: rgb(245, 173, 173);
-  margin: 0px;
+  background-color: rgb(245, 173, 220);
 }
