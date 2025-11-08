@@ -16,7 +16,7 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "preview": "(PREVIEW=true electron .) || $env:PREVIEW=true electron ."
+    "preview": "PREVIEW=true electron ."
   },
   "devDependencies": {
     "electron": "^39.1.1"

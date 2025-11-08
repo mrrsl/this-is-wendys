@@ -1,5 +1,5 @@
-const socketEndpoint = "wss://this-is-wendys-socket-service-dkc8eyd7bzc9hndh.canadacentral-01.azurewebsites.net/ws?pair=";
-const pairCode = "mygoat";
+const socketEndpoint = "wss://this-is-wendys-socket-service-dkc8eyd7bzc9hndh.canadacentral-01.azurewebsites.net/ws?group=";
+const pairCode = "dn";
 /**
  * Sets up the socket connection to the backend service
  * @param {String} pairingCode 
