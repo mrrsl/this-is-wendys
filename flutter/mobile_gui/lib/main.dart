@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MyHomePage(title: 'welcome to the mcdonalds drive-thru'),
+      home: const MyHomePage(title: 'The File Drive-Thru'),
     );
   }
 }
@@ -98,15 +99,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      ClipboardData? clipboardData = await Clipboard.getData(
+                        Clipboard.kTextPlain,
+                      );
+                      String text =
+                          clipboardData?.text ??
+                          'you have nothing in the clipboard';
                       showDialog<String>(
                         context: context,
                         builder:
                             (BuildContext context) => AlertDialog(
-                              title: const Text(
-                                'we haven\'t made the server yet lololololo',
-                              ),
-                              content: const Text('cope and seethe ig'),
+                              title: const Text('success!'),
+                              content: Text(text),
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () => Navigator.pop(context, 'OK'),
@@ -176,5 +181,10 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  Future<String?> pasteTextFromClipboard() async {
+    ClipboardData? data = await Clipboard.getData(Clipboard.kTextPlain);
+    return data?.text;
   }
 }
