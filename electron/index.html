@@ -10,9 +10,21 @@
     <title>File Drive-Thru</title>
   </head>
   <body>
-    <h1>Welcome to the File Drive-Thru!</h1>
-    <p id="carEmoji">🚋</p>
+    <div id="header">
+      <span id="title">🚋File Drive-Thru</span>
+    </div>
     <p id="info"></p>
+    <br />
+    <input type="text" placeholder="Pairing Code" />
+    <br />
+    <button type="submit">Connect to server</button>
+    <br />
+    <br />
+    <textarea id="textInput" placeholder="Clipboard"></textarea>
+    <br />
+    <button type="submit">Copy</button>
+    <button type="submit">Submit</button>
   </body>
   <script src="./renderer.js"></script>
+  <script src="app.js"></script>
 </html>
