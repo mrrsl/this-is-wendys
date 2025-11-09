@@ -23,8 +23,17 @@ Refreshing text uses ValueListenerBuilders so that the text rebuilds whenever th
 I built it to my phone so that's kinda cool
 
 ## Electron client:
-amazing awesome animation and sound effect
-pretty much the same bevahior as the mobile
+Similar layout and logic to the mobile client
+An animation and sound effect plays every time you paste text to the server
 
 ## Backend
 morris you are really going to have to lock in on this one i have no clue how to describe what you have set up
+
+## Members (All Term 1):
+Ryan Guan
+Morris Li
+Grace Yang
+Julia Ziebart
+
+
+
