@@ -13,6 +13,10 @@ body {
   font-family: "SUSE Mono", sans-serif;
 }
 
+#titleText {
+  padding-top: 5px;
+}
+
 #header {
   background-color: rgb(214, 86, 101);
   padding-top: 5px;
@@ -20,7 +24,7 @@ body {
 }
 
 #container {
-  margin-top: 20vh;
+  margin-top: 10vh;
 }
 
 button {
@@ -28,12 +32,24 @@ button {
   font-size: 1.1em;
 }
 
-.pairingCode {
+.areaStyling {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   margin-top: 7vh;
+}
+
+#serverText {
+  border: none;
+  border-bottom: 3px solid;
+  border-color: rgb(213, 77, 95);
+  background-color: rgb(255, 164, 188);
+  border-radius: 5px;
+  font-size: 1.4em;
+  padding-top: 20vh;
+  width: 40vw;
+  height: auto;
 }
 
 #pairing {
@@ -48,38 +64,27 @@ button {
   height: auto;
 }
 
-#textInput {
-  border: none;
-  border-bottom: 3px solid;
-  border-color: rgb(213, 77, 95);
-  background-color: rgb(255, 164, 188);
-  border-radius: 5px;
-  font-size: 1.4em;
-  padding-top: 8px;
-  width: 40vw;
-  height: auto;
-}
-
 #pairing::placeholder,
-#textInput::placeholder {
+#serverText::placeholder {
   padding-top: 6px;
   font-family: "SUSE Mono", sans-serif;
 }
 
 #pairing:focus,
-#textInput:focus {
+#serverText:focus {
   outline: none;
   background-color: rgb(237, 203, 214);
   border-color: rgb(228, 146, 157);
 }
 
 #pairing:focus::placeholder,
-#textInput:focus::placeholder {
+#serverText:focus::placeholder {
   color: transparent;
 }
 
-#buttons {
+#copyPaste {
   flex-direction: row;
+  margin-bottom: 20px;
 }
 
 #copy {
@@ -87,12 +92,12 @@ button {
 }
 
 .emoji {
-  animation: slideIn 3s ease-out forwards;
+  animation: slideIn 1.25s ease-out forwards;
 }
 
 @keyframes slideIn {
   0% {
-    transform: translateX(-60vw);
+    transform: translateX(-30vw);
     opacity: 1;
   }
 

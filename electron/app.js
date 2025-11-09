@@ -15,11 +15,11 @@ function generateGroupEndpoint(groupName) {
 
 function init() {
   const groupInput = document.querySelector("input#pairing");
-  const textInput = document.querySelector("input#textInput");
 
   const groupSubmit = document.querySelector("#pairSubmit");
-  const textSubmit = document.querySelector("button#submit");
   const copyButton = document.querySelector("#copy");
+  const pasteButton = document.querySelector("#paste");
+  const display = document.querySelector('#display');
 
   groupSubmit.addEventListener("click", (event) => {
     if (socketRef) socketRef.close();
@@ -34,15 +34,18 @@ function init() {
     });
   });
 
-  textSubmit.addEventListener("click", (event) => {
-    if (textInput.value.length == 0) return;
-    socketRef && socketRef.send(textInput.value);
-    textInput.value = "";
-  });
-
   copyButton.addEventListener("click", async (event) => {
     await navigator.clipboard.writeText(recData);
   });
+
+  pasteButton.addEventListener("click", async (event) => {
+    await navigator.clipboard.readText(recData);
+  });
+
+  window.addEventListener("focus", async (event) =>{
+  let currentClip = await navigator.clipboard.readText();
+  display.textContent = currentClip;
+})
 }
 
 document.addEventListener("DOMContentLoaded", init);
