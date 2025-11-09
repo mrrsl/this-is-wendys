@@ -39,25 +39,20 @@ button {
 #pairing {
   border: none;
   border-bottom: 3px solid;
-  border-color: rgb(209, 109, 122);
-  background-color: rgb(243, 219, 227);
+  border-color: rgb(213, 77, 95);
+  background-color: rgb(255, 164, 188);
   border-radius: 5px;
   font-size: 1.4em;
   padding-top: 8px;
   width: 40vw;
   height: auto;
-}
-
-#pairing::placeholder {
-  padding-top: 6px;
-  font-family: "SUSE Mono", sans-serif;
 }
 
 #textInput {
   border: none;
   border-bottom: 3px solid;
-  border-color: rgb(224, 82, 101);
-  background-color: rgb(243, 219, 227);
+  border-color: rgb(213, 77, 95);
+  background-color: rgb(255, 164, 188);
   border-radius: 5px;
   font-size: 1.4em;
   padding-top: 8px;
@@ -65,17 +60,26 @@ button {
   height: auto;
 }
 
+#pairing::placeholder,
 #textInput::placeholder {
   padding-top: 6px;
   font-family: "SUSE Mono", sans-serif;
 }
 
-#buttons {
-  flex-direction: row;
+#pairing:focus,
+#textInput:focus {
+  outline: none;
+  background-color: rgb(237, 203, 214);
+  border-color: rgb(228, 146, 157);
 }
 
-#textInput:focus {
-  border-color: rgb(170, 144, 212);
+#pairing:focus::placeholder,
+#textInput:focus::placeholder {
+  color: transparent;
+}
+
+#buttons {
+  flex-direction: row;
 }
 
 #copy {
