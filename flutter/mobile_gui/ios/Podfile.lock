@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - pasteboard (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - pasteboard (from `.symlinks/plugins/pasteboard/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  pasteboard:
+    :path: ".symlinks/plugins/pasteboard/ios"
+
+SPEC CHECKSUMS:
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  pasteboard: 49088aeb6119d51f976a421db60d8e1ab079b63c
+
+PODFILE CHECKSUM: 4305caec6b40dde0ae97be1573c53de1882a07e5
+
+COCOAPODS: 1.16.2
