@@ -30,9 +30,9 @@ An animation and sound effect plays every time you paste text to the server
 morris you are really going to have to lock in on this one i have no clue how to describe what you have set up
 
 ## Members (All Term 1):
-Ryan Guan
-Morris Li
-Grace Yang
+Ryan Guan<br/>
+Morris Li<br/>
+Grace Yang<br/>
 Julia Ziebart
 
 
