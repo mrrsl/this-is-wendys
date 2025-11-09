@@ -8,20 +8,26 @@
   </head>
   <body>
     <div id="header">
-      <span id="title">🚋File Drive-Thru</span>
+      <span id="title">🚋Clipboard Drive-Thru</span>
     </div>
-    <p id="info"></p>
-    <br />
-    <input type="text" placeholder="Pairing Code" />
-    <br />
-    <button type="submit">Connect to server</button>
-    <br />
-    <br />
-    <textarea id="textInput" placeholder="Clipboard"></textarea>
-    <br />
-    <button type="submit">Copy</button>
-    <button type="submit">Submit</button>
+    <div id="container">
+      <div class="pairingCode">
+        <input id="pairing" type="text" placeholder="Pairing Code" />
+        <br />
+        <button type="submit">Connect to server</button>
+      </div>
+      <br />
+      <br />
+      <div class="pairingCode">
+        <input id="textInput" type="text" placeholder="Send text" />
+        <br />
+        <div id="buttons">
+          <button id="copy" type="submit">Copy</button>
+          <button id="submit" type="submit">Submit</button>
+        </div>
+      </div>
+    </div>
   </body>
   <script src="./renderer.js"></script>
-  <script src="app.js"></script>
+  <script type="module" src="app.js"></script>
 </html>

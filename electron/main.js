@@ -1,4 +1,3 @@
-import "style.css";
 const { app, BrowserWindow } = require("electron/main");
 
 const createWindow = () => {
