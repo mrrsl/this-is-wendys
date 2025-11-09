@@ -92,12 +92,12 @@ button {
 }
 
 .emoji {
-  animation: slideIn 2s ease-out forwards;
+  animation: slideIn 1.25s ease-out forwards;
 }
 
 @keyframes slideIn {
   0% {
-    transform: translateX(-20vw);
+    transform: translateX(-30vw);
     opacity: 1;
   }
 
