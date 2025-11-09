@@ -81,3 +81,19 @@ button {
 #copy {
   margin-right: 5vw;
 }
+
+.emoji {
+  animation: slideIn 3s ease-out forwards;
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateX(-60vw);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(0vw);
+    opacity: 1;
+  }
+}
