@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
                   child: Flexible(
                     child: Text(
-                      "Check out templ.it, they worked way harder than we did!",
+                      "Check out templ.it, they are gaming as we speak",
                       textAlign: TextAlign.left,
                       style: TextStyle(fontSize: 16),
                     ),
@@ -120,12 +120,17 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
 
           Container(
-            color: Color.fromRGBO(255, 255, 255, 1),
-            margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
+            margin: EdgeInsets.fromLTRB(25, 25, 25, 0),
             height: MediaQuery.of(context).size.height * 0.6,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
+                //"currently on server" text
+                Text(
+                  "Currently on server:" + ws.receivedMessage,
+                  style: TextStyle(fontFamily: "SUSEMono", fontSize: 24),
+                ),
+
                 //paste text into server button
                 longButton(context, 'paste into server', () async {
                   ClipboardData? clipboardData = await Clipboard.getData(
@@ -184,6 +189,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   child: TextField(
                     decoration: InputDecoration(
+                      hintText: "Enter your pairing key:",
+                      hintStyle: TextStyle(fontFamily: "SUSEMono"),
                       filled: true,
                       fillColor: Color.fromRGBO(243, 219, 227, 1),
                     ),
