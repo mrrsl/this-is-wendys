@@ -1,4 +1,5 @@
 import { SocketManager, mimePriority } from "./lib/socketmanager.js"
+import { Notifier } from "./lib/notifications.js";
 
 
 const groupInput = document.querySelector("input#pairing");
@@ -9,6 +10,7 @@ const pasteButton = document.querySelector("#paste");
 const display = document.querySelector("#serverText");
 
 const connection = new SocketManager();
+const notifications = new Notifier(document.querySelector("#notification-wrapper"));
 
 connection.attachListener("message", handleMessage);
 groupSubmit.addEventListener("click", groupSubmitHandler);
@@ -19,12 +21,14 @@ async function handleMessage(cnLastPayload) {
 
   if (cnLastPayload.type === "text/plain") {
     display.value = cnLastPayload.data;
+    notifications.notifyText(cnLastPayload.data);
   // Assuming image formats exclusively here
   } else {
     let imgBlob = new Blob([cnLastPayload.data], {type: cnLastPayload.type});
     let imgUrl = URL.createObjectURL(imgBlob);
     // TODO: imgUrl is usable as the src for an img element, decide how to show image later
     display.value = "Image received";
+    notifications.notifyImage(imgUrl);
   }
 }
 
