@@ -21,6 +21,9 @@ function init() {
   const pasteButton = document.querySelector("#paste");
   const display = document.querySelector("#serverText");
 
+  const vroom = new Audio("vroom/julia_vroom.m4a");
+  const tram = document.querySelector(".tramStyle");
+
   groupSubmit.addEventListener("click", (event) => {
     if (socketRef) socketRef.close();
     if (groupInput.value.length > 0) {
@@ -30,7 +33,7 @@ function init() {
     }
     socketRef.addEventListener("message", async (event) => {
       recData = event.data;
-      display.value = event.data;
+      display.innerHTML = event.data;
       //jason fuck you
     });
   });
@@ -39,10 +42,10 @@ function init() {
   copyButton.addEventListener("click", async (event) => {
     await navigator.clipboard.writeText(recData);
     if (recData == null) {
-      display.value = "Clipboard is empty.";
+      display.innerHTML = "Clipboard is empty.";
       navigator.clipboard.writeText("");
     } else {
-      display.value = recData;
+      display.innerHTML = recData;
     }
   });
 
@@ -50,24 +53,13 @@ function init() {
   pasteButton.addEventListener("click", async (event) => {
     recData = await navigator.clipboard.readText();
     socketRef.send(recData);
-  });
 
-  //updates serverText upon tabbing in
-  window.addEventListener("focus", async (event) => {
-    let currentClip = await navigator.clipboard.readText();
-    display.value = currentClip;
+    tram.classList.remove("tramCar");
+    void tram.offsetWidth; // force reflow
+    tram.classList.add("tramCar");
+
+    vroom.play();
   });
-  navigator.clipboard.readText().then((text) => (display.value = text));
 }
 
 document.addEventListener("DOMContentLoaded", init);
-
-async function copyText(textToCopy) {
-  try {
-    let copiedString = await navigator.clipboard.readText();
-    socketRef.send(copiedString);
-    console.log("Text copied to clipboard successfully!");
-  } catch (err) {
-    console.error("Failed to copy text: ", err);
-  }
-}

@@ -4,6 +4,7 @@ html,
 body {
   margin: 0px;
   padding: 0px;
+  z-index: 2;
 }
 
 #title {
@@ -24,7 +25,7 @@ body {
 }
 
 #container {
-  margin-top: 10vh;
+  margin-top: 15vh;
 }
 
 button {
@@ -46,12 +47,16 @@ button {
   border-color: rgb(213, 77, 95);
   background-color: rgb(255, 164, 188);
   border-radius: 5px;
-  font-size: 1.4em;
-  padding-top: 10vh;
+  font-family: "SUSE Mono", sans-serif;
+  font-size: 17pt;
+  padding-top: 8px;
   text-align: center;
-  padding-bottom: 10vh;
+  word-wrap: break-word;
+  overflow: hidden;
+  overflow: auto;
   width: 40vw;
   height: auto;
+  max-height: 25vh;
 }
 
 #pairing {
@@ -60,7 +65,8 @@ button {
   border-color: rgb(213, 77, 95);
   background-color: rgb(255, 164, 188);
   border-radius: 5px;
-  font-size: 1.4em;
+  font-family: "SUSE Mono", sans-serif;
+  font-size: 17pt;
   padding-top: 8px;
   text-align: center;
   width: 40vw;
@@ -69,7 +75,6 @@ button {
 
 #pairing::placeholder,
 #serverText::placeholder {
-  padding-top: 6px;
   font-family: "SUSE Mono", sans-serif;
 }
 
@@ -94,10 +99,26 @@ button {
   margin-right: 5vw;
 }
 
-.emoji {
+#emoji {
   animation: slideIn 1.25s ease-out forwards;
 }
 
+.tram {
+  text-align: center;
+  z-index: -1;
+}
+
+.tramStyle {
+  position: fixed;
+  transform: translateX(-200vw);
+  font-size: 20em;
+}
+
+.tramCar {
+  animation: delivery 1.3s ease-out forwards;
+}
+
+/*don't touch it works */
 @keyframes slideIn {
   0% {
     transform: translateX(-30vw);
@@ -106,6 +127,18 @@ button {
 
   100% {
     transform: translateX(0vw);
+    opacity: 1;
+  }
+}
+
+@keyframes delivery {
+  0% {
+    transform: translateX(-200vw);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(300vw);
     opacity: 1;
   }
 }
