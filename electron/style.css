@@ -47,7 +47,9 @@ button {
   background-color: rgb(255, 164, 188);
   border-radius: 5px;
   font-size: 1.4em;
-  padding-top: 20vh;
+  padding-top: 10vh;
+  text-align: center;
+  padding-bottom: 10vh;
   width: 40vw;
   height: auto;
 }
@@ -60,6 +62,7 @@ button {
   border-radius: 5px;
   font-size: 1.4em;
   padding-top: 8px;
+  text-align: center;
   width: 40vw;
   height: auto;
 }

@@ -19,7 +19,7 @@ function init() {
   const groupSubmit = document.querySelector("#pairSubmit");
   const copyButton = document.querySelector("#copy");
   const pasteButton = document.querySelector("#paste");
-  const display = document.querySelector('#serverText');
+  const display = document.querySelector("#serverText");
 
   groupSubmit.addEventListener("click", (event) => {
     if (socketRef) socketRef.close();
@@ -35,22 +35,29 @@ function init() {
     });
   });
 
+  //copy from server
   copyButton.addEventListener("click", async (event) => {
     await navigator.clipboard.writeText(recData);
-    display.value = recData;
+    if (recData == null) {
+      display.value = "Clipboard is empty.";
+      navigator.clipboard.writeText("");
+    } else {
+      display.value = recData;
+    }
   });
 
+  //paste to server
   pasteButton.addEventListener("click", async (event) => {
     recData = await navigator.clipboard.readText();
     socketRef.send(recData);
   });
 
-  window.addEventListener("focus", async (event) =>{
-  let currentClip = await navigator.clipboard.readText();
-  display.value = currentClip;
-});
-navigator.clipboard.readText().then(text => display.value = text);
-
+  //updates serverText upon tabbing in
+  window.addEventListener("focus", async (event) => {
+    let currentClip = await navigator.clipboard.readText();
+    display.value = currentClip;
+  });
+  navigator.clipboard.readText().then((text) => (display.value = text));
 }
 
 document.addEventListener("DOMContentLoaded", init);
