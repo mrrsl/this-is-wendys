@@ -1,6 +1,6 @@
 # The Clipboard Drive-Thru
 
-This is an app intended to enable fast and simple file transfers between devices.
+This is an app intended to enable fast and simple text transfers between devices. Think like copy-pasting with just a couple extra clicks.
 
 ## How to use: 
 * Open the app on both devices
