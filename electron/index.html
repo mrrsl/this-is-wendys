@@ -8,23 +8,25 @@
   </head>
   <body>
     <div id="header">
-      <span id="title"><span class="emoji">🚋</span>Clipboard Drive-Thru</span>
+      <span id="title"
+        ><span class="emoji">🚋</span
+        ><span id="titleText">Clipboard Drive-Thru</span></span
+      >
     </div>
     <div id="container">
-      <div class="pairingCode">
+      <div class="areaStyling">
+        <input id="serverText" type="text" placeholder="Server Text" />
+        <br />
+        <div id="copyPaste">
+          <button id="copy" type="submit">Copy from Server</button>
+          <button id="paste" type="submit">Paste to Server</button>
+        </div>
+        <button id="submit" type="submit">Submit</button>
+      </div>
+      <div class="areaStyling">
         <input id="pairing" type="text" placeholder="Pairing Code" />
         <br />
         <button id="pairSubmit" type="submit">Connect to server</button>
-      </div>
-      <br />
-      <br />
-      <div class="pairingCode">
-        <input id="textInput" type="text" placeholder="Send text" />
-        <br />
-        <div id="buttons">
-          <button id="copy" type="submit">Copy</button>
-          <button id="submit" type="submit">Submit</button>
-        </div>
       </div>
     </div>
   </body>
