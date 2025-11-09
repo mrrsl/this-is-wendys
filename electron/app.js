@@ -1,64 +1,39 @@
-const socketEndpoint =
-  "wss://this-is-wendys-socket-service-dkc8eyd7bzc9hndh.canadacentral-01.azurewebsites.net/ws?group=";
-const pairCode = "dn";
-/**
- * Sets up the socket connection to the backend service
- * @param {String} pairingCode
- * @param {(MessageEvent) => void} onmessage
- * @param {(Event) => void} onopen
- * @param {(CloseEvent) => void} onclose
- */
-function createConnection(pairingCode, onmessage, onclose, onopen) {
-  let socket = new WebSocket(socketEndpoint);
-  onmessage && socket.addEventListener("message", onmessage);
-  onclose && socket.addEventListener("close", onclose);
-  onopen && socket.addEventListener("open", onopen);
-  return socket;
-}
+import { TypeMatrix } from "./lib/fileprocessor.js";
+
+const socketEndpoint = "wss://this-is-wendys-socket-service-dkc8eyd7bzc9hndh.canadacentral-01.azurewebsites.net/ws";
 
 /**
- * Default message handler for printing to console.
- * @param {MessageEvent} mevent
+ * @type {WebSocket | null}
  */
-function messageHandler(mevent) {
-  console.log(`Data: ${mevent.data}`);
+var socketRef = null;
+
+function generateGroupEndpoint(groupName) {
+  return `${socketEndpoint}?group=${groupName}`;
 }
 
-function init(event) {
-  const output = document.querySelector("#display");
-  const input = document.querySelector("input");
-  const enter = document.querySelector("button");
+function init() {
+  const groupInput = document.querySelector("input#pair");
+  const textInput = document.querySelector("input#textInput");
 
-  output.consoleQueue = [];
+  const groupSubmit = document.querySelector("#pairingCode > button");
+  const textSubmit = document.querySelector("button#submit");
 
-  function sendLine(text) {
-    let line = document.createElement("p");
-    line.textContent = text;
-    output.consoleQueue.push(line);
-    output.append(line);
-    if (output.consoleQueue.length > 20) {
-      output.consoleQueue.shift().remove();
+  groupSubmit.addEventListener("click", (event) => {
+    if (socketRef)
+      socketRef.close();
+    if (groupInput.value.length > 0) {
+      socketRef = new WebSocket(generateGroupEndpoint(groupInput.value));
+    } else {
+      socketRef = new WebSocket(socketEndpoint);
     }
-  }
+  });
 
-  output.attachedWs = createConnection(
-    pairCode,
-    (msg) => {
-      sendLine(msg.data);
-    },
-    (close) => {
-      sendLine("Connection closed");
-    },
-    (open) => {
-      sendLine("Connection opened");
-    }
-  );
-
-  enter.addEventListener("click", (event) => {
-    debugger;
-    output.attachedWs.send(input.value);
-    sendLine(`Message sent ${input.value}`);
-    input.value = "";
+  textSubmit.addEventListener("click", (event) => {
+    if (textInput.value.length == 0)
+      return;
+    socketRef && socketRef.send({data: textInput.value, type: TypeMatrix.STRING});
+    textInput.value = "";
   });
 }
-init();
+
+document.addEventListener("DOMContentLoaded", init);
