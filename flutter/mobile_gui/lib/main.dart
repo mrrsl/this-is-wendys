@@ -118,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   valueListenable: mainReceivedMessage,
                   builder: (context, value, child) {
                     return Text(
-                      'Currently on server: $value',
+                      'Text currently on server: $value',
                       style: TextStyle(fontFamily: "SUSEMono", fontSize: 24),
                       textAlign: TextAlign.center,
                     );
