@@ -24,6 +24,9 @@ I built it to my phone so that's kinda cool
 
 ## Electron client:
 Similar layout and logic to the mobile client
+The message from the server is taken in as a JSON string and parsed and checked for if it's text, display as text
+if not, it's an image and checks which image file type it is and renders the correct version. 
+If the typing isn't correct (a pdf or another file) it won't render.
 An animation and sound effect plays every time you paste text to the server
 
 ## Backend
