@@ -1,3 +1,4 @@
+import 'package:mobile_gui/main.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 const defaultMessage = "there's no message here hahahahah lobster";
@@ -19,6 +20,7 @@ class WebsocketController {
     wsChannel.stream.listen(
       (message) {
         receivedMessage = message;
+        mainReceivedMessage.value = message;
       },
       onError: (error) {
         return false;
