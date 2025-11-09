@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mobile_gui/uicomponents.dart';
 import 'package:mobile_gui/websocket_controller.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 WebsocketController ws = WebsocketController();
 
@@ -34,7 +34,6 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const MyHomePage(title: 'The Clipboard Drive-Thru'),
     );
@@ -73,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // TRY THIS: Try changing the color here to a specific color (to
         // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
         // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Color.fromRGBO(214, 86, 101, 1),
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
@@ -104,62 +103,54 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   //paste text into server button
-                  ElevatedButton(
-                    onPressed: () async {
-                      ClipboardData? clipboardData = await Clipboard.getData(
-                        Clipboard.kTextPlain,
+                  longButton(context, 'paste into server', () async {
+                    ClipboardData? clipboardData = await Clipboard.getData(
+                      Clipboard.kTextPlain,
+                    );
+                    String? text = clipboardData?.text;
+                    if (text != null) {
+                      ws.sendData(text);
+                    } else {
+                      showDialog<String>(
+                        context: context,
+                        builder:
+                            (BuildContext context) => AlertDialog(
+                              title: const Text('Off to mcdonalds with you!'),
+                              content: Text("you didn't copy anything"),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, 'OK'),
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            ),
                       );
-                      String? text = clipboardData?.text;
-                      if (text != null) {
-                        ws.sendData(text);
-                      } else {
-                        showDialog<String>(
-                          context: context,
-                          builder:
-                              (BuildContext context) => AlertDialog(
-                                title: const Text('Off to mcdonalds with you!'),
-                                content: Text("you didn't copy anything"),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed:
-                                        () => Navigator.pop(context, 'OK'),
-                                    child: const Text('OK'),
-                                  ),
-                                ],
-                              ),
-                        );
-                      }
-                    },
-                    child: const Text('paste into server'),
-                  ),
+                    }
+                  }),
 
                   //copy server text button
-                  ElevatedButton(
-                    onPressed: () {
-                      if (ws.receivedMessage != defaultMessage) {
-                        Clipboard.setData(
-                          ClipboardData(text: ws.receivedMessage),
-                        );
-                      } else {
-                        showDialog<String>(
-                          context: context,
-                          builder:
-                              (BuildContext context) => AlertDialog(
-                                title: const Text('Nothing to copy'),
-                                content: Text(ws.receivedMessage),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed:
-                                        () => Navigator.pop(context, 'OK'),
-                                    child: const Text('OK'),
-                                  ),
-                                ],
-                              ),
-                        );
-                      }
-                    },
-                    child: const Text('copy from server'),
-                  ),
+                  longButton(context, 'copy from server', () async {
+                    if (ws.receivedMessage != defaultMessage) {
+                      Clipboard.setData(
+                        ClipboardData(text: ws.receivedMessage),
+                      );
+                    } else {
+                      showDialog<String>(
+                        context: context,
+                        builder:
+                            (BuildContext context) => AlertDialog(
+                              title: const Text('Nothing to copy'),
+                              content: Text(ws.receivedMessage),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, 'OK'),
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            ),
+                      );
+                    }
+                  }),
 
                   //pairing key text field
                   Container(
@@ -170,52 +161,53 @@ class _MyHomePageState extends State<MyHomePage> {
                       0,
                     ),
                     child: TextField(
-                      onSubmitted: (text) {
-                        ws.pair(text);
-                        showDialog<String>(
-                          context: context,
-                          builder:
-                              (BuildContext context) => AlertDialog(
-                                title: const Text('Pairing key updated'),
-                                content: const Text(
-                                  'doesn\'t that just make you happy',
-                                ),
-                                actions: <Widget>[
-                                  TextButton(
-                                    onPressed:
-                                        () => Navigator.pop(context, 'OK'),
-                                    child: const Text('OK'),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Color.fromRGBO(243, 219, 227, 1),
+                      ),
+                      onSubmitted: (text) async {
+                        if (await ws.pair(text)) {
+                          showDialog<String>(
+                            context: context,
+                            builder:
+                                (BuildContext context) => AlertDialog(
+                                  title: const Text('Pairing key updated'),
+                                  content: const Text(
+                                    'doesn\'t that just make you happy',
                                   ),
-                                ],
-                              ),
-                        );
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed:
+                                          () => Navigator.pop(context, 'OK'),
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                          );
+                        } else {
+                          showDialog<String>(
+                            context: context,
+                            builder:
+                                (BuildContext context) => AlertDialog(
+                                  title: const Text(
+                                    'Failed to connect to server.',
+                                  ),
+                                  content: const Text(
+                                    'i\'m such a good programmer',
+                                  ),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed:
+                                          () => Navigator.pop(context, 'OK'),
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                          );
+                        }
                       },
                     ),
                   ),
-
-                  //connect to server button
-                  ElevatedButton(
-                    onPressed: () {
-                      showDialog<String>(
-                        context: context,
-                        builder:
-                            (BuildContext context) => AlertDialog(
-                              title: const Text(
-                                'we haven\'t made the server yet lololololo',
-                              ),
-                              content: const Text('cope and seethe ig'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed:
-                                      () => {Navigator.pop(context, 'OK')},
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            ),
-                      );
-                    },
-                    child: const Text('connect to server'),
-                  ), //connect button
                 ],
               ),
             ),
@@ -230,7 +222,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return data?.text;
   }
 
-  void HandleError(BuildContext context) {
+  void handleError(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -247,8 +239,7 @@ class _MyHomePageState extends State<MyHomePage> {
             TextButton(
               child: const Text('OK'),
               onPressed: () {
-                // Perform an action when OK is pressed
-                Navigator.of(context).pop(); // Dismiss the dialog
+                Navigator.of(context).pop();
               },
             ),
           ],
