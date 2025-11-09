@@ -81,7 +81,11 @@ export const SocketManager = class {
         } else {
             let data = JSON.parse(msg.data);
             this.lastMessage = data;
-            this.messageCb && this.messageCb(data);
+            if (this.lastMessage.type !== "text/plain") {
+                let u8 = Uint8Array.fromBase64(this.lastMessage.data);
+                this.lastMessage.data = u8;
+            }
+            this.messageCb && this.messageCb(this.lastMessage);
         }
     }
     /** Internal. */
@@ -129,15 +133,17 @@ export const SocketManager = class {
             this.socketRef.send(JSON.stringify(socketPayload));
 
         } else {
-
-            if (payload.arrayBuffer) {
-                payload.arrayBuffer.then((buffer) => {
-                    let socketPayload = {
-                        data: buffer,
-                        type: (mime) ? mime : "text/plain",
-                    }
-                    this.socketRef.send(JSON.stringify(socketPayload));
-                });
+            // Check that payload is an array buffer
+            if (payload.search) {
+            
+                let socketPayload = {
+                    data: payload,
+                    type: (mime) ? mime : "text/plain",
+                }
+                this.socketRef.send(JSON.stringify(socketPayload));
+            
+            } else {
+                console.error("Attempting to send non-text, non base64 payload");
             }
         }
     }

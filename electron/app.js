@@ -24,6 +24,7 @@ async function handleMessage(cnLastPayload) {
     let imgBlob = new Blob([cnLastPayload.data], {type: cnLastPayload.type});
     let imgUrl = URL.createObjectURL(imgBlob);
     // TODO: imgUrl is usable as the src for an img element, decide how to show image later
+    display.value = "Image received";
   }
 }
 
@@ -41,15 +42,15 @@ async function pasteHandler(clickEvent) {
     return;
   }
 
-  let data = await clipData[chosenType].getType(chosenType);
-  let buff = await data.arrayBuffer();
+  let data = await clipData[0].getType(chosenType);
+  let u8 = new Uint8Array(await data.arrayBuffer());
 
-  connection.send(buff, chosenType);
+  connection.send(u8.toBase64(), chosenType);
 }
 
 async function copyHandler(clickEvent) {
   if (!connection.lastMessage) {
-    display.value = "Clipboard is Empty"
+    display.value = "No data"
     return;
   }
   let lastPayload = connection.lastMessage;
@@ -61,11 +62,10 @@ async function copyHandler(clickEvent) {
     let clipItem = new ClipboardItem({
       [blobform.type]: blobform
     });
-    navigator.clipboard.write(clipItem);
+    navigator.clipboard.write([clipItem]);
   }
 }
 
 async function groupSubmitHandler(clickEvent) {
-  debugger;
   connection.initConnection(groupInput.value);
 }
