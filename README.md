@@ -2,6 +2,8 @@
 
 This is an app intended to enable fast and simple text transfers between devices. Think like copy-pasting with just a couple extra clicks.
 
+PLEASE PULL FROM MAIN
+
 ## How to use: 
 * Open the app on both devices
 * Enter a pairing code
