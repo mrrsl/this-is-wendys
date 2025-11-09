@@ -1,73 +1,71 @@
-import { TypeMatrix } from "./lib/fileprocessor.js";
+import { SocketManager, mimePriority } from "./lib/socketmanager.js"
 
-const socketEndpoint =
-  "wss://this-is-wendys-socket-service-dkc8eyd7bzc9hndh.canadacentral-01.azurewebsites.net/ws";
 
-/**
- * @type {WebSocket | null}
- */
-var socketRef = null;
-var recData;
+const groupInput = document.querySelector("input#pairing");
 
-function generateGroupEndpoint(groupName) {
-  return `${socketEndpoint}?group=${groupName}`;
-}
+const groupSubmit = document.querySelector("#pairSubmit");
+const copyButton = document.querySelector("#copy");
+const pasteButton = document.querySelector("#paste");
+const display = document.querySelector("#serverText");
 
-function init() {
-  const groupInput = document.querySelector("input#pairing");
+const connection = new SocketManager();
 
-  const groupSubmit = document.querySelector("#pairSubmit");
-  const copyButton = document.querySelector("#copy");
-  const pasteButton = document.querySelector("#paste");
-  const display = document.querySelector("#serverText");
+connection.attachListener("message", handleMessage);
+groupSubmit.addEventListener("click", groupSubmitHandler);
+copyButton.addEventListener("click", copyHandler);
+pasteButton.addEventListener("click", pasteHandler);
 
-  groupSubmit.addEventListener("click", (event) => {
-    if (socketRef) socketRef.close();
-    if (groupInput.value.length > 0) {
-      socketRef = new WebSocket(generateGroupEndpoint(groupInput.value));
-    } else {
-      socketRef = new WebSocket(socketEndpoint);
-    }
-    socketRef.addEventListener("message", async (event) => {
-      recData = event.data;
-      display.value = event.data;
-      //jason fuck you
-    });
-  });
+async function handleMessage(cnLastPayload) {
 
-  //copy from server
-  copyButton.addEventListener("click", async (event) => {
-    await navigator.clipboard.writeText(recData);
-    if (recData == null) {
-      display.value = "Clipboard is empty.";
-      navigator.clipboard.writeText("");
-    } else {
-      display.value = recData;
-    }
-  });
-
-  //paste to server
-  pasteButton.addEventListener("click", async (event) => {
-    recData = await navigator.clipboard.readText();
-    socketRef.send(recData);
-  });
-
-  //updates serverText upon tabbing in
-  window.addEventListener("focus", async (event) => {
-    let currentClip = await navigator.clipboard.readText();
-    display.value = currentClip;
-  });
-  navigator.clipboard.readText().then((text) => (display.value = text));
-}
-
-document.addEventListener("DOMContentLoaded", init);
-
-async function copyText(textToCopy) {
-  try {
-    let copiedString = await navigator.clipboard.readText();
-    socketRef.send(copiedString);
-    console.log("Text copied to clipboard successfully!");
-  } catch (err) {
-    console.error("Failed to copy text: ", err);
+  if (cnLastPayload.type === "text/plain") {
+    display.value = cnLastPayload.data;
+  // Assuming image formats exclusively here
+  } else {
+    let imgBlob = new Blob([cnLastPayload.data], {type: cnLastPayload.type});
+    let imgUrl = URL.createObjectURL(imgBlob);
+    // TODO: imgUrl is usable as the src for an img element, decide how to show image later
   }
+}
+
+async function pasteHandler(clickEvent) {
+  let clipData = await navigator.clipboard.read();
+  if (!clipData[0] || clipData[0].length < 1) {
+    display.value = "No clipboard data";
+    return;
+  }
+  let chosenType = mimePriority(clipData[0].types);
+
+  if (chosenType === "text/plain") {
+    let stringBlob = await clipData[0].getType(chosenType);
+    connection.send(await stringBlob.text(), chosenType);
+    return;
+  }
+
+  let data = await clipData[chosenType].getType(chosenType);
+  let buff = await data.arrayBuffer();
+
+  connection.send(buff, chosenType);
+}
+
+async function copyHandler(clickEvent) {
+  if (!connection.lastMessage) {
+    display.value = "Clipboard is Empty"
+    return;
+  }
+  let lastPayload = connection.lastMessage;
+
+  if (lastPayload.type === "text/plain") {
+    navigator.clipboard.writeText(lastPayload.data);
+  } else {
+    let blobform = new Blob([lastPayload.data], {type: lastPayload.type})
+    let clipItem = new ClipboardItem({
+      [blobform.type]: blobform
+    });
+    navigator.clipboard.write(clipItem);
+  }
+}
+
+async function groupSubmitHandler(clickEvent) {
+  debugger;
+  connection.initConnection(groupInput.value);
 }
