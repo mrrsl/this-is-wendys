@@ -1,3 +1,10 @@
+const Types = [
+    "image/gif",
+    "image/webp",
+    "image/png",
+    "image/jpeg",
+    "text/plain",
+]
 
 
 export const SocketManager = class {
@@ -19,7 +26,10 @@ export const SocketManager = class {
     /** Associated group ID. */
     groupId;
 
-    /** Last message received from the server. */
+    /**
+     * Last JSON object recieved from the server.
+     * `lastMessage.data` will have type string or ArrayBuffer.
+     */
     lastMessage;
 
     messageCb;
@@ -31,7 +41,7 @@ export const SocketManager = class {
         this.pasteButton = (elements) ? elements.pasteButton : null;
         this.pairButton = (elements) ? elements.pairButton : null;
         this.pairInput = (elements) ? elements.pairInput : null;
-        this.displayInput = (elements) ? elements.displayInpu: null;
+        this.displayInput = (elements) ? elements.displayInput: null;
 
         this.groupId = null;
         this.socketRef = null;
@@ -43,42 +53,54 @@ export const SocketManager = class {
     }
 
     isReady() {
-        if (socketRef) return true;
+        if (this.socketRef) return true;
         return false;
     }
 
     initConnection(groupId) {
-        if (socketRef) {
+        if (this.socketRef) {
             this.socketRef.close();
             this.groupId = null;
         }
-        var url = "wss://this-is-wendys-socket-service-dkc8eyd7bzc9hndh.canadacentral-01.azurewebsites.net/ws";
-        if (groupId) url = `${url}?group=${groupId}`;
-        this.socketRef = new WebSocket(url);
-        this.socketRef.addEventListener("message", this.onMessage);
-    }
+        this.groupId = groupId;
 
+        let url = "wss://this-is-wendys-socket-service-dkc8eyd7bzc9hndh.canadacentral-01.azurewebsites.net/ws";
+
+        if (groupId) url = `${url}?group=${groupId}`;
+
+        this.socketRef = new WebSocket(url);
+        this.socketRef.addEventListener("message", this.onMessage.bind(this));
+        this.socketRef.addEventListener("close", this.onClose.bind(this));
+        this.socketRef.addEventListener("open", this.onOpen.bind(this));
+    }
+    /** Internal */
     onMessage(msg) {
+        debugger;
         if (!this.groupId) {
             this.groupId = msg.data;
         } else {
             let data = JSON.parse(msg.data);
-            this.messageCb && this.messageCb(msg);
+            this.lastMessage = data;
+            if (this.lastMessage.type !== "text/plain") {
+                let u8 = Uint8Array.fromBase64(this.lastMessage.data);
+                this.lastMessage.data = u8;
+            }
+            this.messageCb && this.messageCb(this.lastMessage);
         }
     }
-
+    /** Internal. */
     onClose(ev) {
         this.socketRef = null;
         this.groupId = null;
         this.closeCb && this.closeCb(ev);
     }
-
+    /** Internal. */
     onOpen(ev) {
         this.openCb && this.openCb(ev);
 
     }
-
-    addEventListener(event, cb) {
+    /** Attach an event listener that gets called after internal ones. */
+    attachListener(event, cb) {
         switch(event) {
             case "message":
                 this.messageCb = cb;
@@ -93,9 +115,14 @@ export const SocketManager = class {
                 break;
         }
     }
-
+    /**
+     * Sends the data through the connected socket
+     * @param {*} payload 
+     * @param {string} mime 
+     * @returns 
+     */
     send(payload, mime) {
-
+        debugger;
         if (!this.socketRef) return false;
 
         if (payload && payload.match) {
@@ -106,17 +133,29 @@ export const SocketManager = class {
             this.socketRef.send(JSON.stringify(socketPayload));
 
         } else {
-
-            if (payload.arrayBuffer) {
-                payload.arrayBuffer.then((buffer) => {
-                    let socketPayload = {
-                        data: buffer,
-                        type: (mime) ? mime : "text/plain",
-                    }
-                    this.socketRef.send(JSON.stringify(socketPayload));
-                });
+            // Check that payload is an array buffer
+            if (payload.search) {
+            
+                let socketPayload = {
+                    data: payload,
+                    type: (mime) ? mime : "text/plain",
+                }
+                this.socketRef.send(JSON.stringify(socketPayload));
+            
+            } else {
+                console.error("Attempting to send non-text, non base64 payload");
             }
         }
     }
+}
 
+/**
+ * Takes a Clipboard Item and returns an included mime type according to a given priority;
+ * @param {*} cbtypes
+ * @return {MimeType}
+ */
+export const mimePriority = function(cbtypes) {
+    for (let type of Types) {
+        if (cbtypes.includes(type)) return type;
+    }
 }

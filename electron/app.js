@@ -1,65 +1,83 @@
-import { TypeMatrix } from "./lib/fileprocessor.js";
+import { SocketManager, mimePriority } from "./lib/socketmanager.js"
+import { Notifier } from "./lib/notifications.js";
 
-const socketEndpoint =
-  "wss://this-is-wendys-socket-service-dkc8eyd7bzc9hndh.canadacentral-01.azurewebsites.net/ws";
 
-/**
- * @type {WebSocket | null}
- */
-var socketRef = null;
-var recData;
+const groupInput = document.querySelector("input#pairing");
 
-function generateGroupEndpoint(groupName) {
-  return `${socketEndpoint}?group=${groupName}`;
+const groupSubmit = document.querySelector("#pairSubmit");
+const copyButton = document.querySelector("#copy");
+const pasteButton = document.querySelector("#paste");
+const display = document.querySelector("#serverText");
+
+const connection = new SocketManager();
+const notifications = new Notifier(document.querySelector("#notification-wrapper"));
+
+connection.attachListener("message", handleMessage);
+groupSubmit.addEventListener("click", groupSubmitHandler);
+copyButton.addEventListener("click", copyHandler);
+pasteButton.addEventListener("click", pasteHandler);
+
+const vroom = new Audio("vroom/julia_vroom.m4a");
+const tram = document.querySelector(".tramStyle");
+
+async function handleMessage(cnLastPayload) {
+
+  if (cnLastPayload.type === "text/plain") {
+    display.value = cnLastPayload.data;
+    notifications.notifyText(cnLastPayload.data);
+  // Assuming image formats exclusively here
+  } else {
+    let imgBlob = new Blob([cnLastPayload.data], {type: cnLastPayload.type});
+    let imgUrl = URL.createObjectURL(imgBlob);
+    // TODO: imgUrl is usable as the src for an img element, decide how to show image later
+    display.value = "Image received";
+    notifications.notifyImage(imgUrl);
+  }
 }
 
-function init() {
-  const groupInput = document.querySelector("input#pairing");
+async function pasteHandler(clickEvent) {
+  let clipData = await navigator.clipboard.read();
+  if (!clipData[0] || clipData[0].length < 1) {
+    display.value = "No clipboard data";
+    return;
+  }
+  let chosenType = mimePriority(clipData[0].types);
 
-  const groupSubmit = document.querySelector("#pairSubmit");
-  const copyButton = document.querySelector("#copy");
-  const pasteButton = document.querySelector("#paste");
-  const display = document.querySelector("#serverText");
+  if (chosenType === "text/plain") {
+    let stringBlob = await clipData[0].getType(chosenType);
+    connection.send(await stringBlob.text(), chosenType);
+    return;
+  }
 
-  const vroom = new Audio("vroom/julia_vroom.m4a");
-  const tram = document.querySelector(".tramStyle");
+  let data = await clipData[0].getType(chosenType);
+  let u8 = new Uint8Array(await data.arrayBuffer());
 
-  groupSubmit.addEventListener("click", (event) => {
-    if (socketRef) socketRef.close();
-    if (groupInput.value.length > 0) {
-      socketRef = new WebSocket(generateGroupEndpoint(groupInput.value));
-    } else {
-      socketRef = new WebSocket(socketEndpoint);
-    }
-    socketRef.addEventListener("message", async (event) => {
-      recData = event.data;
-      display.innerHTML = event.data;
-      //jason fuck you
+  tram.classList.remove("tramCar");
+  void tram.offsetWidth; // force reflow
+  tram.classList.add("tramCar");
+  vroom.play();
+
+  connection.send(u8.toBase64(), chosenType);
+}
+
+async function copyHandler(clickEvent) {
+  if (!connection.lastMessage) {
+    display.value = "No data"
+    return;
+  }
+  let lastPayload = connection.lastMessage;
+
+  if (lastPayload.type === "text/plain") {
+    navigator.clipboard.writeText(lastPayload.data);
+  } else {
+    let blobform = new Blob([lastPayload.data], {type: lastPayload.type})
+    let clipItem = new ClipboardItem({
+      [blobform.type]: blobform
     });
-  });
-
-  //copy from server
-  copyButton.addEventListener("click", async (event) => {
-    await navigator.clipboard.writeText(recData);
-    if (recData == null) {
-      display.innerHTML = "Clipboard is empty.";
-      navigator.clipboard.writeText("");
-    } else {
-      display.innerHTML = recData;
-    }
-  });
-
-  //paste to server
-  pasteButton.addEventListener("click", async (event) => {
-    recData = await navigator.clipboard.readText();
-    socketRef.send(recData);
-
-    tram.classList.remove("tramCar");
-    void tram.offsetWidth; // force reflow
-    tram.classList.add("tramCar");
-
-    vroom.play();
-  });
+    navigator.clipboard.write([clipItem]);
+  }
 }
 
-document.addEventListener("DOMContentLoaded", init);
+async function groupSubmitHandler(clickEvent) {
+  connection.initConnection(groupInput.value);
+}

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_gui/uicomponents.dart';
 import 'package:mobile_gui/websocket_controller.dart';
+import 'package:super_clipboard/super_clipboard.dart';
 
 WebsocketController ws = WebsocketController();
 ValueNotifier<String> mainReceivedMessage = ValueNotifier<String>("");
@@ -127,10 +128,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 //paste text into server button
                 longButton(context, 'paste into server', () async {
-                  ClipboardData? clipboardData = await Clipboard.getData(
-                    Clipboard.kTextPlain,
-                  );
-                  String? text = clipboardData?.text;
+                  final clipboard = SystemClipboard.instance;
+                  if (clipboard == null) {
+                    return; // Clipboard API is not supported on this platform.
+                  }
+                  final reader = await clipboard.read();
+                  String? text = "";
+                  var img;
+                  if (reader.canProvide(Formats.plainText)) {
+                    text = await reader.readValue(Formats.plainText);
+                    // Do something with the plain text
+                  }
                   if (text != null) {
                     ws.sendData(text);
                   } else {
