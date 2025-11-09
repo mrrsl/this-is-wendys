@@ -77,142 +77,163 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Container(
-              color: Color.fromRGBO(255, 255, 255, 1),
-              height: MediaQuery.of(context).size.height * 0.6,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  //paste text into server button
-                  longButton(context, 'paste into server', () async {
-                    ClipboardData? clipboardData = await Clipboard.getData(
-                      Clipboard.kTextPlain,
-                    );
-                    String? text = clipboardData?.text;
-                    if (text != null) {
-                      ws.sendData(text);
-                    } else {
-                      showDialog<String>(
-                        context: context,
-                        builder:
-                            (BuildContext context) => AlertDialog(
-                              title: const Text('Off to mcdonalds with you!'),
-                              content: Text("you didn't copy anything"),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, 'OK'),
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            ),
-                      );
-                    }
-                  }),
-
-                  //copy server text button
-                  longButton(context, 'copy from server', () async {
-                    if (ws.receivedMessage != defaultMessage) {
-                      Clipboard.setData(
-                        ClipboardData(text: ws.receivedMessage),
-                      );
-                    } else {
-                      showDialog<String>(
-                        context: context,
-                        builder:
-                            (BuildContext context) => AlertDialog(
-                              title: const Text('Nothing to copy'),
-                              content: Text(ws.receivedMessage),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, 'OK'),
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            ),
-                      );
-                    }
-                  }),
-
-                  //pairing key text field
-                  Container(
-                    margin: EdgeInsets.fromLTRB(
-                      MediaQuery.of(context).size.width * 0.2,
-                      0,
-                      MediaQuery.of(context).size.width * 0.2,
-                      0,
-                    ),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Color.fromRGBO(243, 219, 227, 1),
-                      ),
-                      onSubmitted: (text) async {
-                        if (await ws.pair(text)) {
-                          showDialog<String>(
-                            context: context,
-                            builder:
-                                (BuildContext context) => AlertDialog(
-                                  title: const Text('Pairing key updated'),
-                                  content: const Text(
-                                    'doesn\'t that just make you happy',
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed:
-                                          () => Navigator.pop(context, 'OK'),
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                ),
-                          );
-                        } else {
-                          showDialog<String>(
-                            context: context,
-                            builder:
-                                (BuildContext context) => AlertDialog(
-                                  title: const Text(
-                                    'Failed to connect to server.',
-                                  ),
-                                  content: const Text(
-                                    'i\'m such a good programmer',
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed:
-                                          () => Navigator.pop(context, 'OK'),
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                ),
-                          );
-                        }
-                      },
+      body: Column(
+        // Column is also a layout widget. It takes a list of children and
+        // arranges them vertically. By default, it sizes itself to fit its
+        // children horizontally, and tries to be as tall as its parent.
+        //
+        // Column has various properties to control how it sizes itself and
+        // how it positions its children. Here we use mainAxisAlignment to
+        // center the children vertically; the main axis here is the vertical
+        // axis because Columns are vertical (the cross axis would be
+        // horizontal).
+        //
+        // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
+        // action in the IDE, or press "p" in the console), to see the
+        // wireframe for each widget.
+        children: <Widget>[
+          //ad container
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+            height: MediaQuery.of(context).size.height * 0.1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Image(
+                  image: AssetImage("assets/images/mischalogo.png"),
+                  width: 75,
+                  height: 75,
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
+                  child: Flexible(
+                    child: Text(
+                      "Check out templ.it, they worked way harder than we did!",
+                      textAlign: TextAlign.left,
+                      style: TextStyle(fontSize: 16),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+
+          Container(
+            color: Color.fromRGBO(255, 255, 255, 1),
+            margin: EdgeInsets.fromLTRB(0, 25, 0, 0),
+            height: MediaQuery.of(context).size.height * 0.6,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                //paste text into server button
+                longButton(context, 'paste into server', () async {
+                  ClipboardData? clipboardData = await Clipboard.getData(
+                    Clipboard.kTextPlain,
+                  );
+                  String? text = clipboardData?.text;
+                  if (text != null) {
+                    ws.sendData(text);
+                  } else {
+                    showDialog<String>(
+                      context: context,
+                      builder:
+                          (BuildContext context) => AlertDialog(
+                            title: const Text('Off to mcdonalds with you!'),
+                            content: Text("you didn't copy anything"),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, 'OK'),
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          ),
+                    );
+                  }
+                }),
+
+                //copy server text button
+                longButton(context, 'copy from server', () async {
+                  if (ws.receivedMessage != defaultMessage) {
+                    Clipboard.setData(ClipboardData(text: ws.receivedMessage));
+                  } else {
+                    showDialog<String>(
+                      context: context,
+                      builder:
+                          (BuildContext context) => AlertDialog(
+                            title: const Text('Nothing to copy'),
+                            content: Text(ws.receivedMessage),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, 'OK'),
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          ),
+                    );
+                  }
+                }),
+
+                //pairing key text field
+                Container(
+                  margin: EdgeInsets.fromLTRB(
+                    MediaQuery.of(context).size.width * 0.2,
+                    0,
+                    MediaQuery.of(context).size.width * 0.2,
+                    0,
+                  ),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Color.fromRGBO(243, 219, 227, 1),
+                    ),
+                    onSubmitted: (text) async {
+                      if (await ws.pair(text)) {
+                        showDialog<String>(
+                          context: context,
+                          builder:
+                              (BuildContext context) => AlertDialog(
+                                title: const Text('Pairing key updated'),
+                                content: const Text(
+                                  'doesn\'t that just make you happy',
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.pop(context, 'OK'),
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              ),
+                        );
+                      } else {
+                        showDialog<String>(
+                          context: context,
+                          builder:
+                              (BuildContext context) => AlertDialog(
+                                title: const Text(
+                                  'Failed to connect to server.',
+                                ),
+                                content: const Text(
+                                  'i\'m such a good programmer',
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.pop(context, 'OK'),
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
