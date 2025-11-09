@@ -19,7 +19,7 @@ function init() {
   const groupSubmit = document.querySelector("#pairSubmit");
   const copyButton = document.querySelector("#copy");
   const pasteButton = document.querySelector("#paste");
-  const display = document.querySelector('#display');
+  const display = document.querySelector('#serverText');
 
   groupSubmit.addEventListener("click", (event) => {
     if (socketRef) socketRef.close();
@@ -30,22 +30,27 @@ function init() {
     }
     socketRef.addEventListener("message", async (event) => {
       recData = event.data;
+      display.value = event.data;
       //jason fuck you
     });
   });
 
   copyButton.addEventListener("click", async (event) => {
     await navigator.clipboard.writeText(recData);
+    display.value = recData;
   });
 
   pasteButton.addEventListener("click", async (event) => {
-    await navigator.clipboard.readText(recData);
+    recData = await navigator.clipboard.readText();
+    socketRef.send(recData);
   });
 
   window.addEventListener("focus", async (event) =>{
   let currentClip = await navigator.clipboard.readText();
-  display.textContent = currentClip;
-})
+  display.value = currentClip;
+});
+navigator.clipboard.readText().then(text => display.value = text);
+
 }
 
 document.addEventListener("DOMContentLoaded", init);
