@@ -5,6 +5,7 @@ import 'package:mobile_gui/websocket_controller.dart';
 
 WebsocketController ws = WebsocketController();
 ValueNotifier<String> mainReceivedMessage = ValueNotifier<String>("");
+ValueNotifier<String> pairingKey = ValueNotifier<String>("");
 
 void main() async {
   await ws.pair("dn");
@@ -119,6 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     return Text(
                       'Currently on server: $value',
                       style: TextStyle(fontFamily: "SUSEMono", fontSize: 24),
+                      textAlign: TextAlign.center,
                     );
                   },
                 ),
@@ -228,6 +230,17 @@ class _MyHomePageState extends State<MyHomePage> {
                       }
                     },
                   ),
+                ),
+
+                ValueListenableBuilder<String>(
+                  valueListenable: pairingKey,
+                  builder: (context, value, child) {
+                    return Text(
+                      'Pairing key: $value',
+                      style: TextStyle(fontFamily: "SUSEMono", fontSize: 16),
+                      textAlign: TextAlign.center,
+                    );
+                  },
                 ),
               ],
             ),

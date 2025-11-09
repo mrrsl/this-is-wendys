@@ -16,6 +16,8 @@ class WebsocketController {
 
     wsChannel = WebSocketChannel.connect(Uri.parse(url));
     await wsChannel.ready;
+    //pairingKey is the one that exists in main.dart
+    pairingKey.value = pairingCode;
 
     wsChannel.stream.listen(
       (message) {
